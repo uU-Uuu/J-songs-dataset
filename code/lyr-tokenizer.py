@@ -15,29 +15,32 @@ mode = tokenizer.Tokenizer.SplitMode.C
 
 
 df = pd.DataFrame(columns = ['Token', 'Reading', 'Dict. form', 'POS', 'Line', 'Song ID'])
+pd.options.display.min_rows = 100
+
 
 
 directory = '../J-SONGS-DATASET/lyrics'
 for filename in glob.glob(directory + '/*-k-*.txt'):
-    with open(filename, 'r', encoding='utf-8') as f:
-        print(f.read())
-        print(filename)
 
-with open('lyrics/1-k-ishikaribanka.txt', 'r', encoding='utf-8') as file:
-    token_list = []
-    line_no, song_id = 1, 1
-    for line in file.readlines():
-        line =  re.sub(r' |\n', '', line)
-        line_token_list = [m.surface() for m in tokenizer_obj.tokenize(line, mode)]
-        
-        # token_list.append(line_token_list)
+    with open(filename, 'r', encoding='utf-8') as file:
+        song_dir = filename.strip("../J-SONGS-DATASET/lyrics\\")
+        song_id_re = re.match(r'^\d*', song_dir)
+        song_id = song_id_re.group()
+        token_list = []
+        line_no = 1
 
-        for tok in line_token_list:
-            m = tokenizer_obj.tokenize(tok, mode)[0]
-            token_info_list = [m.surface(), m.reading_form(), m.dictionary_form(), m.part_of_speech(), line_no, song_id]
-            df.loc[len(df)] = token_info_list
+        for line in file.readlines():
+            line =  re.sub(r' |\n|\u3000|「|」|……', '', line)
+            line_token_list = [m.surface() for m in tokenizer_obj.tokenize(line, mode)]
+            
+            # token_list.append(line_token_list)
 
-        line_no += 1
+            for tok in line_token_list:
+                m = tokenizer_obj.tokenize(tok, mode)[0]
+                token_info_list = [m.surface(), m.reading_form(), m.dictionary_form(), m.part_of_speech(), line_no, song_id]
+                df.loc[len(df)] = token_info_list
+
+            line_no += 1
 
 display(df)
 
@@ -45,8 +48,8 @@ display(df)
 """
     TODO
         - line no#
-    - iterate through files in folder / list of files
-    - song id
+        - iterate through files in folder / list of files
+        - song id
     - insert pitch accent from file
     
     - duplicates (chorus)
