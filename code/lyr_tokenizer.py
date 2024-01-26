@@ -1,7 +1,7 @@
 import re
 import pandas as pd
 from IPython.display import display
-from IPython.display import HTML
+# from IPython.display import HTML
 import glob
 
 from sudachipy import tokenizer
@@ -42,7 +42,9 @@ for filename in glob.glob(directory + '/*-k-*.txt'):
 
             line_no += 1
 
-display(df)
+if __name__ == "__main__":
+    display(df)
+
 
 
 """
@@ -50,7 +52,8 @@ display(df)
         - line no#
         - iterate through files in folder / list of files
         - song id
-    - insert pitch accent from file
+        - insert pitch accent from file
+    - handle NaN (mb normalization, tokenization mode, particles, katakana)
     
     - duplicates (chorus)
     - analyze by dict form - how word is realized in dif lines/ melodies/ songs/ etc
