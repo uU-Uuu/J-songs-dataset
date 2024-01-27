@@ -1,0 +1,110 @@
+img
+
+0 - 平板（へいばん）- particles remain high - [01*p1]
+
+1-6 - 起伏式（きふくしき）- 頭高・中高・尾高
+    中高（なかだか）- particles go low - [01*0*p0] - 3+ moras - 1+ of '0' before particle
+    尾高（おだか）- particles go low [01*p0] - 0 of '0' before particle
+
+1 - 頭高（あたまだか）- particles remain low - [10*p0]
+
+2 - 中高・尾高 - 2nd high only - p low - [010*p0] 
+3 - 中高・尾高 - 2nd & 3rd high only - p low - [0110*p0] 
+4 - 中高・尾高 - 2nd - 4th high only - p low - [01110*p0] 
+5 - 中高・尾高 - 2nd - 5th high only - p low - [011110*p0] 
+6 - 中高・尾高 - 2nd - 6th high only - p low - [0111110*p0] 
+
+
+https://www.kanshudo.com/howto/pitch
+
+VERBS (mostly 平板)
+マス・タイ - same for all
+～ます - [~10]
+～ました - [~100]
+～ません - [~110]
+～ませんでした - [~110000]
+～たい - [~10]
+
+～う - [~1]
+～ない - [~11]
+～った - [~1]
+～って - [~1]
+～える - [~11]
+～れる - [~11]
+～せる - [~11]
+
+BUT
+～なかった - [~100]
+～えば - [~10]
+～おう - [~10]
+
+VERBS (頭高)   (no 尾高)
+～る - [~0]
+～た - [~0]
+～て - [~0]
+～れば - [~00]
+～ない - [~00] - !! short verbs
+～なかった - [~000] - !! short verbs
+
+VERBS (中高) - !! 0 is after 0 in the verb itself (downstep on the 3+ moras)
+～た - [~0] 
+～て - [~0]
+～れば - [~0]
+～ない - [~00] - !! longer verbs
+～なかった - [~000] - !! longer verbs
+～られる - [~110]
+～させる - [~110]
+～ながら - ~[100]
+
+ADJ & inflections　- us. 中高
+～い - [~0] (after 1)
+～かった - [~00] after one 0
+～くて  - [~00] after one 0
+
+否定形
+～くない - [~010]
+～くなかった - [~0100]
+
+「な」形容詞
+漢字＋な　- 平板 - [~na1]
+漢字＋かな＋な　- 頭高・中高 - [~na0]
+～ではない - [~0010]
+～ではなかった - [~00100]
+
+
+if last word's mora 1 >> 10*
+if last word's mora 0 >> 00*
+～だ
+~です
+～でしょう
+～だろう
+～みたい
+
+
+            |---------------------------------------------------|
+            |                  IN SENTENCES                     |
+            |---------------------------------------------------|
+
+- high until downstep (low at the beg. of words is ommited if preceded with high end)
+                      (low preserved when preceded with low end)
+- after a dowstep rise is not that high (sent. starts high - gradually shifts downwards)
+- emphasized words >> relatively higher pitch
+
+
+compound words
+- combination of the pitch accents of the indiv. words
+- changed pattern in larger words
+
+
+
+DICTIONARIES
+0 - no downstep1 (平板)
+1 - 頭高
+[2, len(word)) - 中高
+len(word) - 尾高
+* len(word) = num of moras
+
+
+- count n of moras
+- っ to next mora; 　よゆや - to prev mora
+- provide _П_ pitch diagram (high-low)

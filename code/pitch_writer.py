@@ -30,7 +30,7 @@ for indx, row in df.iterrows():
             df.at[indx, 'Pitch accent'] = pitch_accent_dict[key]
             break
 print(df['Pitch accent'].isna().sum()) #324
-print(df.loc[df.isnull().any(axis=1)])
+display(df.loc[df.isnull().any(axis=1)])
 
 
 
