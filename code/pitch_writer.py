@@ -1,6 +1,8 @@
 import pandas as pd
 from IPython.display import display
 
+import os
+
 from lyr_tokenizer import df
 from pitch_reader import get_pitch_accent_dict
 
@@ -30,8 +32,11 @@ for indx, row in df.iterrows():
             df.at[indx, 'Pitch accent'] = pitch_accent_dict[key]
             break
 print(df['Pitch accent'].isna().sum()) #324
-display(df.loc[df.isnull().any(axis=1)])
-
+# display(df.loc[df.isnull().any(axis=1)].sort_values(by=['Dict. form']))
+df_nan = df.loc[df.isnull().any(axis=1)].sort_values(by=['Dict. form'])
+  
+# os.makedirs('code/output', exist_ok=False)  
+df_nan.to_csv('code/output/NaN.csv')
 
 
 

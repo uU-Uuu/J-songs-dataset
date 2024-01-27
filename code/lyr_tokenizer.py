@@ -54,6 +54,7 @@ if __name__ == "__main__":
         - song id
         - insert pitch accent from file
     - handle NaN (mb normalization, tokenization mode, particles, katakana)
+    - mistakes bc of dict. form - we have diff patterns for diff gram. forms
     
     - duplicates (chorus)
     - analyze by dict form - how word is realized in dif lines/ melodies/ songs/ etc
