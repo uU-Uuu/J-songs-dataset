@@ -17,12 +17,12 @@ from pitch_reader import get_pitch_accent_dict
 df = pd.read_csv('Data.csv', encoding='utf-8')
 
 tokenizer_obj = dictionary.Dictionary(dict_type='full').create()
-mode = tokenizer.Tokenizer.SplitMode.A
+mode = tokenizer.Tokenizer.SplitMode.C
 
 # start at もう一度 225 NaN-dynamics
-sagashi = 'もう一度'
-
-# print(tokenizer_obj.tokenize("つかめ", mode)[0].normalized_form())
+sagashi = '九十九折'
+ 
+print(tokenizer_obj.tokenize(sagashi, mode)[0].normalized_form())
 
 line_token_list = [m.surface() for m in tokenizer_obj.tokenize(sagashi, mode)]
 for tok in line_token_list:
@@ -63,10 +63,14 @@ pitch_accent_dict = get_pitch_accent_dict()
 !!! 
 - check NaN again as they turn out as you handle
 
+- incorrect pos in tokenizing
 - change splitining Mode
 - split proper nouns (often they're song names)
+- unite some proper names back
 - search OJAD, dicts for pitch accent only
 - search for kanji - unite compound words mistakenly split
+- check & delete pitch accent for all particles -　の　て
+- write rules for following particles
 
 つかめる　- dialect - let's leave as it is
 
