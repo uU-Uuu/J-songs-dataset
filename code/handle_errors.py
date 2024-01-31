@@ -17,10 +17,10 @@ from pitch_reader import get_pitch_accent_dict
 df = pd.read_csv('Data.csv', encoding='utf-8')
 
 tokenizer_obj = dictionary.Dictionary(dict_type='full').create()
-mode = tokenizer.Tokenizer.SplitMode.C
+mode = tokenizer.Tokenizer.SplitMode.A
 
 # start at もう一度 225 NaN-dynamics
-sagashi = '九十九折'
+sagashi = '雪が降る'
  
 print(tokenizer_obj.tokenize(sagashi, mode)[0].normalized_form())
 
