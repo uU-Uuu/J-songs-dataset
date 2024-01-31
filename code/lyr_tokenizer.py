@@ -44,6 +44,7 @@ for filename in glob.glob(directory + '/*-k-*.txt'):
 
 if __name__ == "__main__":
     display(df)
+    print(type(df))
 
 
 

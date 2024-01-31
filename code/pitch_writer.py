@@ -35,8 +35,9 @@ print(df['Pitch accent'].isna().sum()) #324
 # display(df.loc[df.isnull().any(axis=1)].sort_values(by=['Dict. form']))
 df_nan = df.loc[df.isnull().any(axis=1)].sort_values(by=['Dict. form'])
   
-# os.makedirs('code/output', exist_ok=False)  
-df_nan.to_csv('code/output/NaN.csv')
+# os.makedirs('code/output', exist_ok=False) 
+if __name__ == "__main__": 
+    df_nan.to_csv('code/output/NaN.csv')
 
 
 
