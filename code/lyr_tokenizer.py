@@ -59,7 +59,7 @@ if __name__ == "__main__":
     - duplicates (chorus)
     - analyze by dict form - how word is realized in dif lines/ melodies/ songs/ etc
 
-    = come up with idea to analyze this (w/o melody (save for master))
+    = come up with idea to analyze this
     = consider moving to Jupiter (for better output display)
 
     - whole line input 
