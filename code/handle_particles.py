@@ -104,7 +104,10 @@ export as new csv after all processing - call func first
 
 go through all verb forms and adj, not those in NaN only
 
-particles 副詞　ば　どう　・・・
+adj
+
 """
 
 
+if __name__ == "__main__": 
+    df.to_csv('code/output/Data_1.csv')
