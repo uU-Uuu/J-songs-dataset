@@ -9,7 +9,7 @@ df = pd.read_csv('Data.csv', encoding='utf-8')
 tokenizer_obj = dictionary.Dictionary(dict_type='full').create()
 mode = tokenizer.Tokenizer.SplitMode.A
 
-sagashi = '止す'
+sagashi = 'します'
  
 print(tokenizer_obj.tokenize(sagashi, mode)[0].normalized_form())
 
