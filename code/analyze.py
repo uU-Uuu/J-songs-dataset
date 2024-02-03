@@ -1,26 +1,54 @@
 import pandas as pd
 from IPython.display import display
 
-from handle_particles import string2tuple
+from matplotlib import pyplot as plt
+
+from handle_particles import string2tuple_pos
 
 
 def get_pos(line):
-    return string2tuple(line)[0]
+    return string2tuple_pos(line)[0]
 
-df = pd.read_csv('Data.csv', encoding='utf-8')
+def str2tuple_pitch(src_line):
+    return tuple(src_line.split(','))
+    
+
+df = pd.read_csv('code/output/Data_1.csv', encoding='utf-8')
 # display(df)
 
+df_pos_pitch = pd.DataFrame(columns=['POS', 'Pitch accent'])
 
-df_pos_pitch = pd.DataFrame().assign(POS=df['POS'].apply(get_pos), Pitch_accent=df['Pitch accent'])
+for ind, row in df.iterrows():
+    if isinstance(row['Pitch accent'], str): # ignore nan
+        for el in str2tuple_pitch(row['Pitch accent']):
+            df_pos_pitch.loc[-1] = [get_pos(row['POS']), el]
+            df_pos_pitch.index += 1
+            df_pos_pitch = df_pos_pitch.sort_index()
+
+
 # display(df_pos_pitch.to_string())
 
 
-def count_patterns(series):
-    pattern_counts = series.value_counts()
-    return pattern_counts
+result_df = df_pos_pitch.groupby('POS')['Pitch accent'].value_counts().unstack(fill_value=0)
+# print(result_df.to_string())
 
-# Apply the custom function to each group of POS
-result_df = df_pos_pitch.groupby('POS')['Pitch_accent'].apply(count_patterns).unstack(fill_value=0)
+df_pos_pitch_06 = result_df[list(filter(lambda x: len(x) == 1, result_df.columns))]
+# print(df_pos_pitch_06.to_string())
 
-# df_pos_pitch_groups = df_pos_pitch.groupby('POS', 'Pitch_accent')['Pitch_accent'].count()
-print(result_df.to_string())
+df_pos_pitch_not_06 = result_df[list(filter(lambda x: len(x) != 1, result_df.columns))]
+df_pos_pitch_not_06 = df_pos_pitch_not_06.loc[(df_pos_pitch_not_06!=0).any(axis=1)]
+# print(df_pos_pitch_not_06.to_string())
+
+plt.rcParams['font.family'] = 'MS Gothic'
+df_pos_pitch_06.plot.bar(stacked=True, figsize=(7,7), colormap='plasma')
+
+plt.show()
+
+
+
+if __name__ == "__main__": 
+    df_pos_pitch.to_csv('code/output/POS_pitch.csv')
+    df_pos_pitch_06.to_csv('code/output/POS_pitch_06.csv')
+    df_pos_pitch_not_06.to_csv('code/output/POS_pitch_not_06.csv')
+
+

@@ -3,7 +3,7 @@ import numpy as np
 from IPython.display import display
 
 
-def string2tuple(src_line):
+def string2tuple_pos(src_line):
     f = src_line.strip('()').split(', ')
     return tuple(x.strip("'") for x in f)
 
@@ -12,7 +12,7 @@ del df['Unnamed: 0']
 
 
 def joshi_pitch_assign():
-    joshi = df[df['POS'].apply(lambda x: string2tuple(x)[0] == '助詞')]
+    joshi = df[df['POS'].apply(lambda x: string2tuple_pos(x)[0] == '助詞')]
     # display(joshi)
     for index, row in joshi.iterrows():
         line = df.loc[index - 1, 'Pitch accent']
@@ -29,7 +29,7 @@ def joshi_pitch_assign():
 
 
 def jodoushi_pitch_assign():
-    jodoushi = df[df['POS'].apply(lambda x: string2tuple(x)[0] == '助動詞')]
+    jodoushi = df[df['POS'].apply(lambda x: string2tuple_pos(x)[0] == '助動詞')]
     # display(jodoushi.to_string())     
 
     for index, rows in jodoushi.iterrows():
@@ -85,7 +85,7 @@ def jodoushi_pitch_assign():
 
 
 def fukushi_pitch_assign():
-    fukushi = df[df['POS'].apply(lambda x: string2tuple(x)[0] == '副詞')]
+    fukushi = df[df['POS'].apply(lambda x: string2tuple_pos(x)[0] == '副詞')]
     # display(fukushi) 
 
 joshi_pitch_assign()
