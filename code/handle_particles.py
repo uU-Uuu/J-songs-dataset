@@ -50,7 +50,7 @@ def jodoushi_pitch_assign():
                     elif x in '123456':
                         pitch_acc_li.append('0' * len(token) if len(prev_token) > int(x) \
                             else ('1' + '0' * (len(token) - 1) if len(prev_token) == int(x) else ''))
-                pitch_acc = ','.join(el for el in pitch_acc_li)
+                pitch_acc = ','.join(el for el in set(pitch_acc_li))
             finally:
                 df.loc[index, 'Pitch accent'] = pitch_acc
         
