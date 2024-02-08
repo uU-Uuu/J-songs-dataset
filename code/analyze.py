@@ -18,7 +18,7 @@ def str2tuple_pitch(src_line):
 
 if __name__ == "__main__": 
 
-    df = pd.read_csv('code/output/Data_1.csv', encoding='utf-8')
+    df = pd.read_csv('Data/Data_handled.csv', encoding='utf-8')
     # display(df)
 
     df_pos_pitch = pd.DataFrame(columns=['POS', 'Pitch accent'])
@@ -50,6 +50,6 @@ if __name__ == "__main__":
     plt.show()
 
 
-    df_pos_pitch.to_csv('code/output/POS_pitch.csv')
-    df_pos_pitch_06.to_csv('code/output/POS_pitch_06.csv')
-    df_pos_pitch_not_06.to_csv('code/output/POS_pitch_not_06.csv')
+    df_pos_pitch.to_csv('Data/POS_pitch.csv')
+    df_pos_pitch_06.to_csv('Data/POS_pitch_06.csv')
+    df_pos_pitch_not_06.to_csv('Data/POS_pitch_not_06.csv')

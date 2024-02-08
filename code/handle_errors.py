@@ -4,12 +4,12 @@ from sudachipy import dictionary
 import pandas as pd
 
 
-df = pd.read_csv('Data.csv', encoding='utf-8')
+df = pd.read_csv('Data/Data_init.csv', encoding='utf-8')
 
 tokenizer_obj = dictionary.Dictionary(dict_type='full').create()
 mode = tokenizer.Tokenizer.SplitMode.A
 
-sagashi = 'します'
+sagashi = ''
  
 print(tokenizer_obj.tokenize(sagashi, mode)[0].normalized_form())
 

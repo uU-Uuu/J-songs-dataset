@@ -7,7 +7,7 @@ def string2tuple_pos(src_line):
     f = src_line.strip('()').split(', ')
     return tuple(x.strip("'") for x in f)
 
-df = pd.read_csv('Data.csv', encoding='utf-8')
+df = pd.read_csv('Data/Data.csv', encoding='utf-8')
 del df['Unnamed: 0']
 
 
@@ -110,4 +110,4 @@ adj
 
 
 if __name__ == "__main__": 
-    df.to_csv('code/output/Data_1.csv')
+    df.to_csv('Data/Data_handled.csv')

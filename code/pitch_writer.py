@@ -37,8 +37,6 @@ df_nan = df.loc[df.isnull().any(axis=1)].sort_values(by=['Dict. form'])
   
 # os.makedirs('code/output', exist_ok=False) 
 if __name__ == "__main__": 
-    df_nan.to_csv('code/output/NaN.csv')
-
-
+    df_nan.to_csv('Data/NaN.csv')
 
 # display(df)
