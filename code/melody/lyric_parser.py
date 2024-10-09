@@ -11,9 +11,9 @@ from sudachipy import tokenizer, dictionary
 
 parser = etree.XMLParser()
 
-xml_filename = '.\melody\\1-ishikaribanka.xml'
-txt_filename = '.\lyrics\\1-k-ishikaribanka.txt'
-txt_h_filename = '.\lyrics\\1-h-ishikaribanka.txt'
+xml_filename = 'xml\\1-ishikaribanka.xml'
+txt_filename = 'lyrics\\1-k-ishikaribanka.txt'
+txt_h_filename = 'lyrics\\1-h-ishikaribanka.txt'
 
 
 def get_xml_root(filename):
