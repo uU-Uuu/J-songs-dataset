@@ -148,6 +148,12 @@ class LyricsTokenizer:
 
         zipped_ = list(zip_longest(k_lyr_phrs, h_lyr_phrs, lex_phrs_annotated))
         return zipped_, song_id
+    
+    @staticmethod
+    def parse_melody_short(melody_full):
+        """'ゆ=E5*1/8 め=G5*1/8+A5*1/8' >> 'E5 G5+A5'"""
+        pass
+
 
 
 pd.options.display.min_rows = 100
