@@ -29,8 +29,12 @@ class LyricsTokenizer:
 
     @classmethod
     def create_lex_ph_df(cls):
-        cls.lex_ph_df = pd.DataFrame(columns=['Lex. Phr.', 'Reading', 'Pitch Accent', 'Melody', 'Melody Full', 'Line', 'Song ID'])
-
+        cls.lex_ph_df = pd.DataFrame(columns=[
+            'Lex. Phr.', 'Reading', 'Pitch Accent', 
+            'Melody', 'Duration', 'Duration Calc.',
+            'Melody Full', 'Line', 'Song ID'
+            ])
+        
     @classmethod
     def melody_file_to_df(cls, k_filename, h_filename, xml_filename):
         zipped_, song_id = cls.zip_words_pitches(
@@ -38,9 +42,12 @@ class LyricsTokenizer:
         for phrase in zipped_:
 
             phrase_info = [phrase[0], phrase[1].strip('\n'), '', 
-                           cls.parse_melody_short(phrase[2]), phrase[2], '', song_id]
+                           cls.parse_melody_short(phrase[2]), 
+                           cls.parse_duration(phrase[2]),
+                           cls.parse_duration(phrase[2], calc=True),
+                           phrase[2], '', song_id]
             cls.lex_ph_df.loc[len(cls.lex_ph_df.index)] = phrase_info
-        display(cls.lex_ph_df[['Reading', 'Melody', 'Melody Full']])
+        display(cls.lex_ph_df[['Reading', 'Melody', 'Duration', 'Duration Calc.', 'Melody Full']])
 
 
     @classmethod
@@ -150,24 +157,33 @@ class LyricsTokenizer:
     
     @staticmethod
     def parse_melody_short(melody_full):
-        """'ゆ=E5*1/8 め=G5*1/8+A5*1/8' >> 'E5 G5+A5'"""
+        """Parse melody pitch values from melody_full string
+
+        'ゆ=E5*1/8 め=G5*1/8+A5*1/8' -> 'E5 G5+A5'"""
         re_pattern = r'([A-Z]\d|\+[A-Z]\d)'
         melody_short = ''
         for matched in re.finditer(re_pattern, melody_full):
-            print(matched)
             sep = (' ', '')[matched.group().startswith('+')]
             melody_short += sep + matched.group()
         return melody_short.lstrip()
     
     @staticmethod
-    def parse_duration(melody_full):
-        """'ゆ=E5*1/8 め=G5*1/8+A5*1/8' >> '1/8 1/8+1/8'"""
-        pass
+    def parse_duration(melody_full, calc=False):
+        """Parse duration values from melody_full string
 
+        ゆ=E5*1/8 め=G5*1/8+A5*1/8 ->
+        - calc=False:  1/8 1/8+1/8 
+        - calc=True: (0.125, 0.25)"""
+        re_pattern = r'(\d\/\d{,2}\+|\d\/\d{,2})'
+        duration_raw = '' 
+        for matched in re.finditer(re_pattern, melody_full):
+            if calc:
+                sep = (', ', '')[matched.group().endswith('+')]
+            else:
+                sep = (' ', '')[matched.group().endswith('+')]
+            duration_raw += matched.group() + sep
+        return eval(duration_raw) if calc else duration_raw.lstrip()
 
-        
-
- 
 
 pd.options.display.min_rows = 100
 pd.set_option('display.max_columns', None)
@@ -178,6 +194,8 @@ lyr_tokenizer = LyricsTokenizer()
 lyr_tokenizer.create_word_df()
 lyr_tokenizer.create_lex_ph_df()
 lyr_tokenizer.melody_file_to_df(txt_k_filename, txt_h_filename, xml_filename)
+
+# print(lyr_tokenizer.parse_duration('ゆ=E5*1/8 め=G5*1/8+A5*1/8', calc=True))
 
 # lyrics_tokenizer.tokenize_file(txt_k_filename)
 # display(lyrics_tokenizer.df)
