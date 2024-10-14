@@ -1,11 +1,9 @@
-from os import stat
 from lxml import etree
 from itertools import zip_longest
 import re
 import pandas as pd
 from IPython.display import display
 from pprint import pprint
-
 
 from sudachipy import tokenizer, dictionary
 
@@ -27,11 +25,11 @@ class LyricsTokenizer:
 
     @classmethod
     def create_word_df(cls):
-        cls.word_df = pd.DataFrame(columns=['Token', 'Reading', 'Dict. form', 'POS', 'Line', 'Song ID'])
+        cls.word_df = pd.DataFrame(columns=['Token', 'Reading', 'Dict. Form', 'POS', 'Line', 'Song ID'])
 
     @classmethod
     def create_lex_ph_df(cls):
-        cls.lex_ph_df = pd.DataFrame(columns=['Lex. Phr.', 'Reading', 'Pitch accent', 'Melody full', 'Line', 'Song ID'])
+        cls.lex_ph_df = pd.DataFrame(columns=['Lex. Phr.', 'Reading', 'Pitch Accent', 'Melody', 'Melody Full', 'Line', 'Song ID'])
 
     @classmethod
     def melody_file_to_df(cls, k_filename, h_filename, xml_filename):
@@ -39,9 +37,10 @@ class LyricsTokenizer:
             xml_filename=xml_filename, h_filename=h_filename, k_filename=k_filename)
         for phrase in zipped_:
 
-            phrase_info = [phrase[0], phrase[1].strip('\n'), '', phrase[2], '', song_id]
+            phrase_info = [phrase[0], phrase[1].strip('\n'), '', 
+                           cls.parse_melody_short(phrase[2]), phrase[2], '', song_id]
             cls.lex_ph_df.loc[len(cls.lex_ph_df.index)] = phrase_info
-        display(cls.lex_ph_df)
+        display(cls.lex_ph_df[['Reading', 'Melody', 'Melody Full']])
 
 
     @classmethod
@@ -152,25 +151,33 @@ class LyricsTokenizer:
     @staticmethod
     def parse_melody_short(melody_full):
         """'ゆ=E5*1/8 め=G5*1/8+A5*1/8' >> 'E5 G5+A5'"""
-        re_pattern = r'(\w\d|\+\w\d)'
+        re_pattern = r'([A-Z]\d|\+[A-Z]\d)'
         melody_short = ''
         for matched in re.finditer(re_pattern, melody_full):
+            print(matched)
             sep = (' ', '')[matched.group().startswith('+')]
             melody_short += sep + matched.group()
         return melody_short.lstrip()
+    
+    @staticmethod
+    def parse_duration(melody_full):
+        """'ゆ=E5*1/8 め=G5*1/8+A5*1/8' >> '1/8 1/8+1/8'"""
+        pass
+
 
         
 
  
 
 pd.options.display.min_rows = 100
+pd.set_option('display.max_columns', None)
+pd.set_option('display.expand_frame_repr', False)
+
 
 lyr_tokenizer = LyricsTokenizer()
-# lyr_tokenizer.create_word_df()
-# lyr_tokenizer.create_lex_ph_df()
-# lyr_tokenizer.melody_file_to_df(txt_k_filename, txt_h_filename, xml_filename)
-
-lyr_tokenizer.parse_melody_short('ゆ=E5*1/8 め=G5*1/8+A5*1/8')
+lyr_tokenizer.create_word_df()
+lyr_tokenizer.create_lex_ph_df()
+lyr_tokenizer.melody_file_to_df(txt_k_filename, txt_h_filename, xml_filename)
 
 # lyrics_tokenizer.tokenize_file(txt_k_filename)
 # display(lyrics_tokenizer.df)
