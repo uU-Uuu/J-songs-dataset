@@ -152,16 +152,26 @@ class LyricsTokenizer:
     @staticmethod
     def parse_melody_short(melody_full):
         """'ゆ=E5*1/8 め=G5*1/8+A5*1/8' >> 'E5 G5+A5'"""
-        pass
+        re_pattern = r'(\w\d|\+\w\d)'
+        melody_short = ''
+        for matched in re.finditer(re_pattern, melody_full):
+            sep = (' ', '')[matched.group().startswith('+')]
+            melody_short += sep + matched.group()
+        return melody_short.lstrip()
 
+        
 
+ 
 
 pd.options.display.min_rows = 100
 
 lyr_tokenizer = LyricsTokenizer()
-lyr_tokenizer.create_word_df()
-lyr_tokenizer.create_lex_ph_df()
-lyr_tokenizer.melody_file_to_df(txt_k_filename, txt_h_filename, xml_filename)
+# lyr_tokenizer.create_word_df()
+# lyr_tokenizer.create_lex_ph_df()
+# lyr_tokenizer.melody_file_to_df(txt_k_filename, txt_h_filename, xml_filename)
+
+lyr_tokenizer.parse_melody_short('ゆ=E5*1/8 め=G5*1/8+A5*1/8')
+
 # lyrics_tokenizer.tokenize_file(txt_k_filename)
 # display(lyrics_tokenizer.df)
 
