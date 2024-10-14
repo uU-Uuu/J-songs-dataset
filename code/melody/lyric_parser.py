@@ -4,22 +4,20 @@ import re
 import pandas as pd
 from IPython.display import display
 from pprint import pprint
-
+from selenium import webdriver
+from selenium.webdriver.common.by import By
 from sudachipy import tokenizer, dictionary
 
-
-parser = etree.XMLParser()
 
 xml_filename = 'xml\\1-ishikaribanka.xml'
 txt_k_filename = 'lyrics\\1-k-ishikaribanka.txt'
 txt_h_filename = 'lyrics\\1-h-ishikaribanka.txt'
 
 
-
-        
-# zip_words_pitches()
-
 class LyricsTokenizer:
+    parser = etree.XMLParser()
+    driver = webdriver.Chrome()
+
     lyr_tokenizer = dictionary.Dictionary(dict='full').create()
     mode = tokenizer.Tokenizer.SplitMode.C
 
@@ -78,11 +76,9 @@ class LyricsTokenizer:
             xml_str = file.read()
             xml_str = xml_str.encode('utf-8')
             root = etree.fromstring(xml_str)
-
         title = root.find('title').text
         key = root.find('key').text
         time_signature = root.find('time_signature').text
-
         return root
 
     @staticmethod
@@ -183,6 +179,11 @@ class LyricsTokenizer:
                 sep = (' ', '')[matched.group().endswith('+')]
             duration_raw += matched.group() + sep
         return eval(duration_raw) if calc else duration_raw.lstrip()
+    
+    @staticmethod
+    def scrape_phrase_pitch(phrase):
+        LyricsTokenizer.driver.get('https://www.gavo.t.u-tokyo.ac.jp/ojad/phrasing/index')
+        textarea = LyricsTokenizer.driver.find_element(By.XPATH, '//*[@id="PhrasingText"]')
 
 
 pd.options.display.min_rows = 100
@@ -191,9 +192,10 @@ pd.set_option('display.expand_frame_repr', False)
 
 
 lyr_tokenizer = LyricsTokenizer()
-lyr_tokenizer.create_word_df()
-lyr_tokenizer.create_lex_ph_df()
-lyr_tokenizer.melody_file_to_df(txt_k_filename, txt_h_filename, xml_filename)
+# lyr_tokenizer.create_word_df()
+# lyr_tokenizer.create_lex_ph_df()
+# lyr_tokenizer.melody_file_to_df(txt_k_filename, txt_h_filename, xml_filename)
+lyr_tokenizer.scrape_phrase_pitch('jkl')
 
 # print(lyr_tokenizer.parse_duration('ゆ=E5*1/8 め=G5*1/8+A5*1/8', calc=True))
 
