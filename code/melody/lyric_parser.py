@@ -6,6 +6,7 @@ from IPython.display import display
 from pprint import pprint
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import Select
 from sudachipy import tokenizer, dictionary
 
 
@@ -181,9 +182,45 @@ class LyricsTokenizer:
         return eval(duration_raw) if calc else duration_raw.lstrip()
     
     @staticmethod
-    def scrape_phrase_pitch(phrase):
+    def scrape_phrase_pitch(phrase, mode=0):
+        """
+        mode: 
+        - 0 (default): natural (Machine Learning)
+        - 1: detailed (Bunsetsu)
+        """
         LyricsTokenizer.driver.get('https://www.gavo.t.u-tokyo.ac.jp/ojad/phrasing/index')
         textarea = LyricsTokenizer.driver.find_element(By.XPATH, '//*[@id="PhrasingText"]')
+        submit_btn = LyricsTokenizer.driver.find_element(By.XPATH, '//*[@id="phrasing_submit_wrapper"]/div/input')
+        textarea.send_keys(phrase)
+        mode_selector = Select(LyricsTokenizer.driver.find_element(By.XPATH, '//*[@id="PhrasingEstimation"]'))
+        mode_selector.select_by_index(mode)
+        submit_btn.click()
+        moras_line = LyricsTokenizer.driver.find_element(By.XPATH, '//*[@id="phrasing_main"]/div[9]/div/div[2]')
+        moras = moras_line.find_elements(By.XPATH, './*')[:-1]
+        LyricsTokenizer.driver.quit()
+        return (mora.get_attribute('class') for mora in moras)
+
+    @staticmethod
+    def decode_mora_class(moras):
+        """
+        - mola = 0
+        - accent_plain = 1
+        - accent_top = 1/
+        - unvoiced = 0. 1. 1/.
+        """
+        moras_ = []
+        for mora in moras:
+            if 'accent_plain' in mora:
+                moras_.append('1')
+            elif 'accent_top ' in mora:
+                moras_.append('1/')
+            else:
+                moras_.append('0')
+            if 'unvoiced' in mora:
+                moras_[-1] += '.'
+        return moras_
+            
+
 
 
 pd.options.display.min_rows = 100
@@ -195,7 +232,10 @@ lyr_tokenizer = LyricsTokenizer()
 # lyr_tokenizer.create_word_df()
 # lyr_tokenizer.create_lex_ph_df()
 # lyr_tokenizer.melody_file_to_df(txt_k_filename, txt_h_filename, xml_filename)
-lyr_tokenizer.scrape_phrase_pitch('jkl')
+lyr_tokenizer.scrape_phrase_pitch('ニンシンが来ると', mode=1)
+lyr_tokenizer.decode_mora_class(['mola_0', 'accent_plain mola_1', 'accent_top mola_2', 
+                                 'mola_3', 'mola_4 unvoiced', 'accent_top mola_5', 'mola_6', 
+                                 'mola_7'])
 
 # print(lyr_tokenizer.parse_duration('ゆ=E5*1/8 め=G5*1/8+A5*1/8', calc=True))
 
