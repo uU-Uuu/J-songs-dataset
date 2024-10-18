@@ -29,10 +29,8 @@ class LyricsTokenizer:
     @classmethod
     def create_lex_ph_df(cls):
         cls.lex_ph_df = pd.DataFrame(columns=[
-            'Lex. Phr.', 'Reading', 'Pitch Accent', 
-            'Melody', 'Duration', 'Duration Calc.',
-            'Melody Full', 'Line', 'Song ID'
-            ])
+            'Lex. Phr.', 'Reading', 'Pitch Accent 0', 'Pitch Accent 1',
+            'Melody', 'Duration', 'Duration Calc.', 'Melody Full', 'Line', 'Song ID'])
         
     @classmethod
     def melody_file_to_df(cls, k_filename, h_filename, xml_filename):
@@ -40,7 +38,7 @@ class LyricsTokenizer:
             xml_filename=xml_filename, h_filename=h_filename, k_filename=k_filename)
         for phrase in zipped_:
 
-            phrase_info = [phrase[0], phrase[1].strip('\n'), '', 
+            phrase_info = [phrase[0], phrase[1].strip('\n'), '', '',
                            cls.parse_melody_short(phrase[2]), 
                            cls.parse_duration(phrase[2]),
                            cls.parse_duration(phrase[2], calc=True),
@@ -48,6 +46,11 @@ class LyricsTokenizer:
             cls.lex_ph_df.loc[len(cls.lex_ph_df.index)] = phrase_info
         display(cls.lex_ph_df[['Reading', 'Melody', 'Duration', 'Duration Calc.', 'Melody Full']])
 
+    @classmethod    
+    def populate_phrases_pitch(cls):
+        for ind, row in cls.lex_ph_df.iterrows():
+            row['Pitch Accent 0'] = LyricsTokenizer.scrape_phrase_pitch(row['Lex. Phr.'], mode=0)
+            row['Pitch Accent 1'] = LyricsTokenizer.scrape_phrase_pitch(row['Lex. Phr.'], mode=1)
 
     @classmethod
     def tokenize_phrase(cls, phrase, line_no, song_id):
@@ -72,6 +75,7 @@ class LyricsTokenizer:
                 cls.tokenize_phrase(line, line_no, song_id)
                 line_no += 1
 
+    @staticmethod
     def get_xml_root(xml_filename):
         with open(xml_filename, encoding='utf-8', mode='r') as file:
             xml_str = file.read()
@@ -197,11 +201,13 @@ class LyricsTokenizer:
         submit_btn.click()
         moras_line = LyricsTokenizer.driver.find_element(By.XPATH, '//*[@id="phrasing_main"]/div[9]/div/div[2]')
         moras = moras_line.find_elements(By.XPATH, './*')[:-1]
-        LyricsTokenizer.driver.quit()
-        return (mora.get_attribute('class') for mora in moras)
+        moras_classes = [mora.get_attribute('class') for mora in moras]
+        decoded = LyricsTokenizer.decode_mora_class(moras_classes)
+        return decoded
+
 
     @staticmethod
-    def decode_mora_class(moras):
+    def decode_mora_class(moras, to_str=False):
         """
         - mola = 0
         - accent_plain = 1
@@ -218,7 +224,11 @@ class LyricsTokenizer:
                 moras_.append('0')
             if 'unvoiced' in mora:
                 moras_[-1] += '.'
-        return moras_
+        return ' '.join(moras_) if to_str else moras_ 
+    
+    @staticmethod
+    def save_df_csv(cls, df, filename,index=False):
+        df.to_csv(filename, index=index)
             
 
 
@@ -229,17 +239,8 @@ pd.set_option('display.expand_frame_repr', False)
 
 
 lyr_tokenizer = LyricsTokenizer()
-# lyr_tokenizer.create_word_df()
-# lyr_tokenizer.create_lex_ph_df()
-# lyr_tokenizer.melody_file_to_df(txt_k_filename, txt_h_filename, xml_filename)
-lyr_tokenizer.scrape_phrase_pitch('ニンシンが来ると', mode=1)
-lyr_tokenizer.decode_mora_class(['mola_0', 'accent_plain mola_1', 'accent_top mola_2', 
-                                 'mola_3', 'mola_4 unvoiced', 'accent_top mola_5', 'mola_6', 
-                                 'mola_7'])
-
-# print(lyr_tokenizer.parse_duration('ゆ=E5*1/8 め=G5*1/8+A5*1/8', calc=True))
-
-# lyrics_tokenizer.tokenize_file(txt_k_filename)
-# display(lyrics_tokenizer.df)
-
-# lyr_tokenizer.parse_k_txt_file(txt_k_filename)
+lyr_tokenizer.create_word_df()
+lyr_tokenizer.create_lex_ph_df()
+lyr_tokenizer.melody_file_to_df(txt_k_filename, txt_h_filename, xml_filename)
+lyr_tokenizer.populate_phrases_pitch()
+lyr_tokenizer.save_df_csv(lyr_tokenizer.lex_ph_df, filename='./data/lex_phr.csv')
