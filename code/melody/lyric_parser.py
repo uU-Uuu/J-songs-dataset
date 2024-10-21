@@ -183,7 +183,7 @@ class LyricsTokenizer:
             else:
                 sep = (' ', '')[matched.group().endswith('+')]
             duration_raw += matched.group() + sep
-        return eval(duration_raw) if calc else duration_raw.lstrip()
+        return ' '.join(map(str, eval(duration_raw))) if calc else duration_raw.lstrip()
     
     @staticmethod
     def scrape_phrase_pitch(phrase, mode=0):
@@ -202,7 +202,7 @@ class LyricsTokenizer:
         moras_line = LyricsTokenizer.driver.find_element(By.XPATH, '//*[@id="phrasing_main"]/div[9]/div/div[2]')
         moras = moras_line.find_elements(By.XPATH, './*')[:-1]
         moras_classes = [mora.get_attribute('class') for mora in moras]
-        decoded = LyricsTokenizer.decode_mora_class(moras_classes)
+        decoded = LyricsTokenizer.decode_mora_class(moras_classes, to_str=True)
         return decoded
 
 
@@ -227,7 +227,7 @@ class LyricsTokenizer:
         return ' '.join(moras_) if to_str else moras_ 
     
     @staticmethod
-    def save_df_csv(cls, df, filename,index=False):
+    def save_df_csv(df, filename, index=False):
         df.to_csv(filename, index=index)
             
 
