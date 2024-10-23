@@ -13,6 +13,7 @@ from sudachipy import tokenizer, dictionary
 xml_filename = 'xml\\1-ishikaribanka.xml'
 txt_k_filename = 'lyrics\\1-k-ishikaribanka.txt'
 txt_h_filename = 'lyrics\\1-h-ishikaribanka.txt'
+txt_ojad_filename = 'lyrics\\1-ojad-ishikaribanka.txt'
 
 
 class LyricsTokenizer:
@@ -29,28 +30,29 @@ class LyricsTokenizer:
     @classmethod
     def create_lex_ph_df(cls):
         cls.lex_ph_df = pd.DataFrame(columns=[
-            'Lex. Phr.', 'Reading', 'Pitch Accent 0', 'Pitch Accent 1',
+            'Lex. Phr.', 'Reading', 'OJAD', 'Pitch Accent 0', 'Pitch Accent 1',
             'Melody', 'Duration', 'Duration Calc.', 'Melody Full', 'Line', 'Song ID'])
         
     @classmethod
-    def melody_file_to_df(cls, k_filename, h_filename, xml_filename):
+    def melody_file_to_df(cls, k_filename, h_filename, ojad_filename, xml_filename):
         zipped_, song_id = cls.zip_words_pitches(
-            xml_filename=xml_filename, h_filename=h_filename, k_filename=k_filename)
+            xml_filename=xml_filename, h_filename=h_filename, k_filename=k_filename, ojad_filename=ojad_filename)
         for phrase in zipped_:
 
-            phrase_info = [phrase[0], phrase[1].strip('\n'), '', '',
+            phrase_info = [phrase[0], phrase[1].strip('\n'), phrase[2].strip('\n'), 
+                           '', '',
                            cls.parse_melody_short(phrase[2]), 
-                           cls.parse_duration(phrase[2]),
-                           cls.parse_duration(phrase[2], calc=True),
-                           phrase[2], '', song_id]
+                           cls.parse_duration(phrase[3]),
+                           cls.parse_duration(phrase[3], calc=True),
+                           phrase[3], '', song_id]
             cls.lex_ph_df.loc[len(cls.lex_ph_df.index)] = phrase_info
         display(cls.lex_ph_df[['Reading', 'Melody', 'Duration', 'Duration Calc.', 'Melody Full']])
 
     @classmethod    
     def populate_phrases_pitch(cls):
         for ind, row in cls.lex_ph_df.iterrows():
-            row['Pitch Accent 0'] = LyricsTokenizer.scrape_phrase_pitch(row['Lex. Phr.'], mode=0)
-            row['Pitch Accent 1'] = LyricsTokenizer.scrape_phrase_pitch(row['Lex. Phr.'], mode=1)
+            row['Pitch Accent 0'] = LyricsTokenizer.scrape_phrase_pitch(row['OJAD'], mode=0)
+            row['Pitch Accent 1'] = LyricsTokenizer.scrape_phrase_pitch(row['OJAD'], mode=1)
 
     @classmethod
     def tokenize_phrase(cls, phrase, line_no, song_id):
@@ -138,22 +140,27 @@ class LyricsTokenizer:
         return lex_phrs
 
     @staticmethod
-    def zip_words_pitches(xml_filename, h_filename, k_filename=None, ignore_blank=True):
-        with open(h_filename, 'r', encoding='utf-8') as file:
+    def zip_words_pitches(xml_filename, h_filename, k_filename=None, ojad_filename=None, ignore_blank=True):
+        with open(h_filename, 'r', encoding='utf-8') as file_h:
             song_dir = h_filename.strip('../J-SONGS-DATASET/lyrics\\')
             match_song_id = re.match(r'^\d*', song_dir)
             song_id = match_song_id.group()
-            h_lyr_phrs = file.readlines()
+            h_lyr_phrs = file_h.readlines()
 
         if k_filename:
             k_lyr_phrs = LyricsTokenizer.parse_k_txt_file(k_filename)
+        
+        if ojad_filename:
+            with open(ojad_filename, 'r', encoding='utf-8') as file_o:
+                ojad_lyr_phrs = file_o.readlines()
 
         if ignore_blank:
             h_lyr_phrs = list(filter(lambda phr: phr != '\n', h_lyr_phrs))
             k_lyr_phrs = list(filter(lambda phr: phr != '\n', k_lyr_phrs))
+            ojad_lyr_phrs = list(filter(lambda phr: phr != '\n', ojad_lyr_phrs))
         lex_phrs_annotated = LyricsTokenizer.concat_lex_phrs_xml(xml_filename)
 
-        zipped_ = list(zip_longest(k_lyr_phrs, h_lyr_phrs, lex_phrs_annotated))
+        zipped_ = list(zip_longest(k_lyr_phrs, h_lyr_phrs, ojad_lyr_phrs, lex_phrs_annotated))
         return zipped_, song_id
     
     @staticmethod
@@ -241,6 +248,10 @@ pd.set_option('display.expand_frame_repr', False)
 lyr_tokenizer = LyricsTokenizer()
 lyr_tokenizer.create_word_df()
 lyr_tokenizer.create_lex_ph_df()
-lyr_tokenizer.melody_file_to_df(txt_k_filename, txt_h_filename, xml_filename)
+lyr_tokenizer.melody_file_to_df(
+    k_filename=txt_k_filename, 
+    h_filename=txt_h_filename, 
+    ojad_filename=txt_ojad_filename,
+    xml_filename=xml_filename)
 lyr_tokenizer.populate_phrases_pitch()
 lyr_tokenizer.save_df_csv(lyr_tokenizer.lex_ph_df, filename='./data/melody/lex_phr.csv')
